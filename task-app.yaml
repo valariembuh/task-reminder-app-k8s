@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: task-app
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-app-deployment
+  namespace: task-app
+  labels:
+    app: task-reminder-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: task-reminder-app
+  template:
+    metadata:
+      labels:
+        app: task-reminder-app
+    spec:
+      containers:
+        - name: task-app-container
+          image: task-reminder-app:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-app-service
+  namespace: task-app
+spec:
+  selector:
+    app: task-reminder-app
+  type: NodePort
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
